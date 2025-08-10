@@ -1,0 +1,23 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Logged Out</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <p>You have been successfully logged out.</p>
+                </div>
+                <p>Thank you for visiting Sports Blog!</p>
+                <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary ms-2">Return to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Post Content -->
+        <div class="card mb-4">
+            {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h1 class="card-title">{{ post.title }}</h1>
+                <p class="text-muted">
+                    <span class="badge bg-primary category-badge">{{ post.category.name }}</span>
+                    Posted by {{ post.author.username }} on {{ post.publish|date:"F d, Y" }}
+                </p>
+                <div class="post-content my-4">
+                    {{ post.content|linebreaks }}
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <form id="like-form" action="{% url 'like_post' post.slug %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if is_liked %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart"></i> 
+                                <span id="like-count">{{ post.likes.count }}</span> Likes
+                            </button>
+                        </form>
+                    </div>
+                    {% if user == post.author %}
+                        <div>
+                            <a href="{% url 'post_update' post.slug %}" class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-comments"></i> Comments ({{ post.active_comments_count }})
+            </div>
+            <div class="card-body">
+                {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'add_comment' post.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.content.label_tag }}
+                            {{ comment_form.content }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Comment</button>
+                    </form>
+                    <hr>
+                {% else %}
+                    <div class="alert alert-info">
+                        Please <a href="{% url 'login' %}">login</a> to leave a comment.
+                    </div>
+                {% endif %}
+                
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <img class="rounded-circle" src="{% if comment.author.profile.profile_pic %}{{ comment.author.profile.profile_pic.url }}{% else %}https://via.placeholder.com/50{% endif %}" alt="{{ comment.author.username }}" width="50" height="50">
+                            </div>
+                            <div class="ms-3">
+                                <div class="fw-bold">{{ comment.author.username }}</div>
+                                <div class="small text-muted mb-2">{{ comment.created|date:"F d, Y g:i A" }}</div>
+                                {{ comment.content|linebreaks }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Author Info -->
+        <div class="card mb-4">
+            <div class="card-header">About the Author</div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img class="rounded-circle me-3" src="{% if post.author.profile.profile_pic %}{{ post.author.profile.profile_pic.url }}{% else %}https://via.placeholder.com/50{% endif %}" alt="{{ post.author.username }}" width="50" height="50">
+                    <div>
+                        <h5 class="mb-0">{{ post.author.username }}</h5>
+                        <div class="text-muted small">Author</div>
+                    </div>
+                </div>
+                <p>{% if post.author.profile.bio %}{{ post.author.profile.bio }}{% else %}No bio available.{% endif %}</p>
+            </div>
+        </div>
+
+        <!-- Related Posts -->
+        <div class="card mb-4">
+            <div class="card-header">More from {{ post.category.name }}</div>
+            <div class="card-body">
+                {% for related_post in post.category.posts.all|slice:":3" %}
+                    {% if related_post != post %}
+                        <div class="mb-3">
+                            <h6>
+                                <a href="{% url 'post_detail' related_post.slug %}" class="text-decoration-none">
+                                    {{ related_post.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                {{ related_post.publish|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endif %}
+                {% empty %}
+                    <p>No related posts available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('#like-form').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    $('#like-count').text(response.count);
+                    if (response.liked) {
+                        $('#like-form button i').removeClass('far').addClass('fas');
+                        $('#like-form button').removeClass('btn-outline-danger').addClass('btn-danger');
+                    } else {
+                        $('#like-form button i').removeClass('fas').addClass('far');
+                        $('#like-form button').removeClass('btn-danger').addClass('btn-outline-danger');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

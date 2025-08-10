@@ -1,0 +1,122 @@
+/* Main Styles for Sports Blog */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    line-height: 1.6;
+}
+
+/* Header and Navigation */
+.navbar {
+    background-color: #1a237e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Cards and Content */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.category-badge {
+    background-color: #1a237e;
+    font-weight: 500;
+}
+
+/* Post Detail */
+.post-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.featured-image {
+    max-height: 400px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Comments */
+.comment-section {
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 30px;
+}
+
+.comment {
+    padding: 15px;
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Like Button */
+.like-btn {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.liked {
+    color: #dc3545;
+}
+
+.not-liked {
+    color: #6c757d;
+}
+
+/* Profile */
+.profile-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #1a237e;
+}
+
+/* Footer */
+.footer {
+    background-color: #1a237e;
+    color: white;
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 150px;
+    }
+    
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+    }
+}

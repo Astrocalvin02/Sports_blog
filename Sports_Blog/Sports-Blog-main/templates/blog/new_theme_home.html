@@ -1,0 +1,169 @@
+{% extends 'blog/new_theme_base.html' %}
+
+{% block title %}SPORTS ARENA - Next Gen Sports{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Featured Posts Section -->
+    {% if featured_post %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="post-card-modern" style="max-width: 100%; margin-bottom: 2rem;">
+                <div class="post-image-container" style="height: 400px;">
+                    {% if featured_post.featured_image %}
+                        <img src="{{ featured_post.featured_image.url }}" class="post-image" alt="{{ featured_post.title }}">
+                    {% else %}
+                        <div class="post-image" style="background: linear-gradient(45deg, var(--sports-orange), var(--neon-green)); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-trophy" style="font-size: 5rem; color: white;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="post-overlay"></div>
+                    <div class="post-category">{{ featured_post.category.name }}</div>
+                </div>
+                <div class="post-content-modern">
+                    <h2 class="post-title-modern" style="font-size: 2rem;">{{ featured_post.title }}</h2>
+                    <div class="post-meta-modern">
+                        <i class="fas fa-user"></i> {{ featured_post.author.username }} | 
+                        <i class="fas fa-calendar"></i> {{ featured_post.publish|date:"M d, Y" }} |
+                        <i class="fas fa-eye"></i> {{ featured_post.view_count }} views
+                    </div>
+                    <p class="post-excerpt">{{ featured_post.content|truncatewords:100 }}</p>
+                    <a href="{% url 'post_detail' featured_post.slug %}" class="read-more-btn">
+                        <i class="fas fa-play-circle me-2"></i>READ FULL STORY
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Posts Grid -->
+    <div class="post-grid">
+        {% for post in posts %}
+            <div class="post-card-modern">
+                <div class="post-image-container">
+                    {% if post.featured_image %}
+                        <img src="{{ post.featured_image.url }}" class="post-image" alt="{{ post.title }}">
+                    {% else %}
+                        <div class="post-image" style="background: linear-gradient(135deg, var(--sports-orange), var(--neon-green)); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-futbol" style="font-size: 3rem; color: white;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="post-overlay"></div>
+                    <div class="post-category">{{ post.category.name }}</div>
+                </div>
+                <div class="post-content-modern">
+                    <h3 class="post-title-modern">{{ post.title }}</h3>
+                    <div class="post-meta-modern">
+                        <i class="fas fa-user"></i> {{ post.author.username }} | 
+                        <i class="fas fa-calendar"></i> {{ post.publish|date:"M d" }}
+                    </div>
+                    <p class="post-excerpt">{{ post.content|truncatewords:30 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'post_detail' post.slug %}" class="read-more-btn">
+                            <i class="fas fa-arrow-right me-1"></i>READ
+                        </a>
+                        <div>
+                            <span class="me-3" style="color: var(--text-gray);">
+                                <i class="fas fa-comment"></i> {{ post.active_comments_count }}
+                            </span>
+                            <span style="color: var(--sports-orange);">
+                                <i class="fas fa-heart"></i> {{ post.likes.count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <div style="padding: 3rem; color: var(--text-gray);">
+                    <i class="fas fa-inbox" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                    <h3>No posts available yet</h3>
+                    <p>Check back later for exciting sports content!</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center" style="gap: 0.5rem;">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" style="background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" style="background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link" style="background: var(--neon-green); border-color: var(--neon-green); color: var(--primary-black);">
+                                    {{ num }}
+                                </span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}" style="background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);">
+                                    {{ num }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" style="background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" style="background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Categories Section -->
+<div class="container-fluid mt-5" style="background: var(--dark-gray); padding: 3rem 0;">
+    <div class="container">
+        <h2 class="text-center mb-4" style="font-family: 'Orbitron', monospace; color: var(--neon-green);">
+            <i class="fas fa-tags me-2"></i>BROWSE BY CATEGORY
+        </h2>
+        <div class="row">
+            {% for category in categories %}
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <a href="{% url 'category_posts' category.slug %}" class="text-decoration-none">
+                        <div class="card" style="background: var(--light-gray); border: 1px solid var(--sports-orange); transition: all 0.3s ease;">
+                            <div class="card-body text-center">
+                                <i class="fas fa-folder" style="font-size: 2rem; color: var(--sports-orange); margin-bottom: 0.5rem;"></i>
+                                <h5 style="color: var(--text-white); margin: 0;">{{ category.name }}</h5>
+                                <small style="color: var(--text-gray);">{{ category.posts.count }} posts</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p style="color: var(--text-gray);">No categories available</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
